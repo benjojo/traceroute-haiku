@@ -13,7 +13,8 @@ all: build
 
 .PHONY: build
 build: .GOPATH/.ok
-	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)
+	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)/haikus
+	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)/haiku-tun
 
 ### Code not in the repository root? Another binary? Add to the path like this.
 # .PHONY: otherbin
