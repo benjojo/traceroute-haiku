@@ -84,8 +84,24 @@ func main() {
 }
 
 func dnsfySentance(in string) string {
-	in = strings.Replace(in, "\t", "", -1)
-	in = strings.Replace(in, "—", "", -1)
-	in = strings.Replace(in, " ", ".", -1)
-	return strings.Trim(in, ".") + "."
+	allowed := []byte("qwertyuiopasdfghjklzxcvbnm-.1234567890 ")
+	out := ""
+	previousspace := false
+	for _, c := range []byte(in) {
+		for _, a := range allowed {
+			if c == a {
+				if c == 0x20 {
+					if !previousspace {
+						out = fmt.Sprintf("%s.", out)
+						previousspace = true
+					}
+				} else {
+					out = fmt.Sprintf("%s%s", out, string(c))
+					previousspace = false
+				}
+				continue
+			}
+		}
+	}
+	return strings.Trim(out, ".") + "."
 }
