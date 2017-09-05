@@ -1,0 +1,16 @@
+$ORIGIN x.benjojo.co.uk.
+@       3600 IN SOA sns.dns.icann.org. noc.dns.icann.org. (
+                                1504642741 ; serial
+                                7200       ; refresh (2 hours)
+                                3600       ; retry (1 hour)
+                                1209600    ; expire (2 weeks)
+                                3600       ; minimum (1 hour)
+                                )
+    3600 IN NS rdns1.benjojo.co.uk.
+       3600 IN NS rdns2.benjojo.co.uk.
+haiku-trace.x.benjojo.co.uk.	10	IN	AAAA	2a07:1500:000c:0000:0000:0000:001a:8004
+haiku-trace.x.benjojo.co.uk.	10	IN	AAAA	2a07:1500:000c:0000:0000:0000:00ae:5004
+haiku-trace.x.benjojo.co.uk.	10	IN	AAAA	2a07:1500:000c:0000:0000:0000:002c:5004
+haiku-trace.x.benjojo.co.uk.	10	IN	AAAA	2a07:1500:000c:0000:0000:0000:00b6:5004
+haiku-trace.x.benjojo.co.uk.	10	IN	AAAA	2a07:1500:000c:0000:0000:0000:0033:c004
+haiku-trace.x.benjojo.co.uk.	10	IN	AAAA	2a07:1500:000c:0000:0000:0000:000e:9004

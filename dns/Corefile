@@ -1,0 +1,6 @@
+x.benjojo.co.uk {
+    file /etc/coredns/x.benjojo.co.uk
+    prometheus	0.0.0.0:9999     # enable metrics
+    errors stdout  # show errors
+    log stdout     # show query logs
+}
