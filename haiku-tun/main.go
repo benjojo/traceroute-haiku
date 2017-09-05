@@ -39,13 +39,11 @@ func main() {
 		}
 
 		if packet[39] != 0x04 {
-			log.Printf("dropped packet because it didnt match the last byte policy")
 			continue // drop and ignore, we don't care
 		}
 
 		TTL := uint8(packet[7])
 		if TTL < 5 {
-			log.Printf("debug: TTL is less than 4")
 			// Handle ICMP Hop limit expired
 			returnpacket := make([]byte, plen+8+40)
 			returnpacket[0] = 0x60 // IP packet version, Thus it is 6
@@ -83,16 +81,13 @@ func main() {
 			// crc := v6checksumICMP(returnpacket)
 			src := net.IP(returnpacket[8 : 8+16])
 			dst := net.IP(returnpacket[24 : 24+16])
-			log.Printf("Returning fire from %s to %s", src.String(), dst.String())
-			crcb := Checksum(returnpacket[40:], src, dst)
+			crcb := checksum(returnpacket[40:], src, dst)
 			// crcbuf := new(bytes.Buffer)
 			// binary.Write(crcbuf, binary.BigEndian, uint16(crc))
 			returnpacket[42] = crcb[0]
 			returnpacket[43] = crcb[1]
 
 			// Aaaaaaaaaaaand that is all folks, Send it out. Ship it.
-			log.Printf("debug: all done sending.")
-
 			ifce.Write(returnpacket)
 		} else {
 			// Handle generic responce (UDP and ICMP)
@@ -101,7 +96,7 @@ func main() {
 	}
 }
 
-func Checksum(body []byte, srcIP, dstIP net.IP) (crc []byte) {
+func checksum(body []byte, srcIP, dstIP net.IP) (crc []byte) {
 	out := make([]byte, 2)
 	// from golang.org/x/net/icmp/message.go
 	checksum := func(b []byte) uint16 {
