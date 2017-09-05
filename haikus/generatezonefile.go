@@ -58,6 +58,8 @@ func main() {
 		}
 	}
 
+	benjojozone := ""
+
 	log.Printf("# We found %d haikus", len(haikus))
 	var hid uint16 = 1
 	for _, hku := range haikus {
@@ -80,7 +82,11 @@ func main() {
 		fmt.Printf("2%s\t10\tIN\tPTR\t%s\n", addrtemplate, dnsfySentance(sentances[1]))
 		fmt.Printf("3%s\t10\tIN\tPTR\t%s\n", addrtemplate, dnsfySentance(sentances[2]))
 		fmt.Printf("4%s\t10\tIN\tPTR\t%s\n", addrtemplate, dnsfySentance(fmt.Sprintf("author %s", hku.Author)))
+		benjojozone += fmt.Sprintf("haiku-trace.x.benjojo.co.uk.\t10\tIN\tAAAA\t2a07:1500:000c:0000:0000:0000:0%s%s%s:%s004\n",
+			string(hidhexnibbles[0]), string(hidhexnibbles[1]), string(hidhexnibbles[2]), string(hidhexnibbles[3]))
 	}
+
+	log.Println(benjojozone)
 }
 
 func dnsfySentance(in string) string {
