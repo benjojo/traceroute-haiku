@@ -5,8 +5,10 @@ import (
 	"encoding/binary"
 	"flag"
 	"log"
+	"net"
 
 	"github.com/songgao/water"
+	"golang.org/x/net/icmp"
 )
 
 func main() {
@@ -42,7 +44,7 @@ func main() {
 		}
 
 		TTL := uint8(packet[7])
-		if TTL < 4 {
+		if TTL < 5 {
 			log.Printf("debug: TTL is less than 4")
 			// Handle ICMP Hop limit expired
 			returnpacket := make([]byte, plen+8+40)
@@ -60,7 +62,7 @@ func main() {
 			}
 			returnpacket[7+16] = 0x00 + TTL
 			// Copy the source address from the incoming packet, and use it as the destination.
-			for i := 0; i < 16; i++ {
+			for i := 0; i < 17; i++ {
 				returnpacket[23+i] = packet[7+i]
 			}
 			// Now, We should have a IPv6 packet that "works", now we need to make the ICMPv6 chunk
@@ -78,16 +80,15 @@ func main() {
 			}
 
 			// Oh GOD now here comes a strange CRC dance
-			crc, err := computeChecksum(returnpacket)
-			if err != nil {
-				log.Printf("Failed to CRC: %s", err.Error())
-			}
-			crcbuf := new(bytes.Buffer)
-			binary.Write(crcbuf, binary.BigEndian, uint16(crc))
-			// crcbuf := make([]byte, binary.MaxVarintLen16)
-			// binary.PutUvarint(crcbuf, uint64(crc))
-			returnpacket[42] = crcbuf.Bytes()[0]
-			returnpacket[43] = crcbuf.Bytes()[1]
+			// crc := v6checksumICMP(returnpacket)
+			src := net.IP(returnpacket[8 : 8+16])
+			dst := net.IP(returnpacket[24 : 24+16])
+			log.Printf("Returning fire from %s to %s", src.String(), dst.String())
+			crcb := Checksum(returnpacket[40:], src, dst)
+			// crcbuf := new(bytes.Buffer)
+			// binary.Write(crcbuf, binary.BigEndian, uint16(crc))
+			returnpacket[42] = crcb[0]
+			returnpacket[43] = crcb[1]
 
 			// Aaaaaaaaaaaand that is all folks, Send it out. Ship it.
 			log.Printf("debug: all done sending.")
@@ -100,44 +101,39 @@ func main() {
 	}
 }
 
-func computeChecksum(headerAndPayload []byte) (uint16, error) {
-	length := uint32(len(headerAndPayload))
-	csum, err := pseudoheaderChecksum(headerAndPayload[7:7+16], headerAndPayload[23:23+16])
-	if err != nil {
-		return 0, err
+func Checksum(body []byte, srcIP, dstIP net.IP) (crc []byte) {
+	out := make([]byte, 2)
+	// from golang.org/x/net/icmp/message.go
+	checksum := func(b []byte) uint16 {
+		csumcv := len(b) - 1 // checksum coverage
+		s := uint32(0)
+		for i := 0; i < csumcv; i += 2 {
+			s += uint32(b[i+1])<<8 | uint32(b[i])
+		}
+		if csumcv&1 == 0 {
+			s += uint32(b[csumcv])
+		}
+		s = s>>16 + s&0xffff
+		s = s + s>>16
+		return ^uint16(s)
 	}
-	csum += uint32(58)
-	csum += length & 0xffff
-	csum += length >> 16
-	return tcpipChecksum(headerAndPayload[39:], csum), nil
-}
 
-func pseudoheaderChecksum(SrcIP, DstIP []byte) (csum uint32, err error) {
-	for i := 0; i < 16; i += 2 {
-		csum += uint32(SrcIP[i]) << 8
-		csum += uint32(SrcIP[i+1])
-		csum += uint32(DstIP[i]) << 8
-		csum += uint32(DstIP[i+1])
-	}
-	return csum, nil
-}
+	b := body
 
-func tcpipChecksum(data []byte, csum uint32) uint16 {
-	// to handle odd lengths, we loop to length - 1, incrementing by 2, then
-	// handle the last byte specifically by checking against the original
-	// length.
-	length := len(data) - 1
-	for i := 0; i < length; i += 2 {
-		// For our test packet, doing this manually is about 25% faster
-		// (740 ns vs. 1000ns) than doing it by calling binary.BigEndian.Uint16.
-		csum += uint32(data[i]) << 8
-		csum += uint32(data[i+1])
-	}
-	if len(data)%2 == 1 {
-		csum += uint32(data[length]) << 8
-	}
-	for csum > 0xffff {
-		csum = (csum >> 16) + (csum & 0xffff)
-	}
-	return ^uint16(csum)
+	// remember origin length
+	l := len(b)
+	// generate pseudo header
+	psh := icmp.IPv6PseudoHeader(srcIP, dstIP)
+	// concat psh with b
+	b = append(psh, b...)
+	// set length of total packet
+	off := 2 * net.IPv6len
+	binary.BigEndian.PutUint32(b[off:off+4], uint32(l))
+	// calculate checksum
+	s := checksum(b)
+	// set checksum in bytes and return original Body
+	out[0] ^= byte(s)
+	out[1] ^= byte(s >> 8)
+
+	return out
 }

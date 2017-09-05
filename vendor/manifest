@@ -18,6 +18,60 @@
 			"notests": true
 		},
 		{
+			"importpath": "golang.org/x/net/bpf",
+			"repository": "https://go.googlesource.com/net",
+			"vcs": "git",
+			"revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+			"branch": "master",
+			"path": "bpf",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/net/icmp",
+			"repository": "https://go.googlesource.com/net",
+			"vcs": "git",
+			"revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+			"branch": "master",
+			"path": "/icmp",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/net/internal/iana",
+			"repository": "https://go.googlesource.com/net",
+			"vcs": "git",
+			"revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+			"branch": "master",
+			"path": "internal/iana",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/net/internal/socket",
+			"repository": "https://go.googlesource.com/net",
+			"vcs": "git",
+			"revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+			"branch": "master",
+			"path": "internal/socket",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/net/ipv4",
+			"repository": "https://go.googlesource.com/net",
+			"vcs": "git",
+			"revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+			"branch": "master",
+			"path": "ipv4",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/net/ipv6",
+			"repository": "https://go.googlesource.com/net",
+			"vcs": "git",
+			"revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+			"branch": "master",
+			"path": "ipv6",
+			"notests": true
+		},
+		{
 			"importpath": "golang.org/x/sys/windows",
 			"repository": "https://go.googlesource.com/sys",
 			"vcs": "git",
