@@ -32,7 +32,7 @@ However to let the other side know that a packet was lost in the manner, the rou
 
 The idea of traceroute is to purposely set these hop limit very low and incrementally increase it upwards to discover all routers in the path between you and the destination:
 
-{{{GIF???}}}
+![how a traceroute works gif](/blog-images/trace.gif)
 
 In addition, traceroute tools helpfully lookup the "reverse DNS" of the IP address to find out more information about the router. However placing reverse DNS on these IP addresses is entirely optional but most operators do to help their clients debug things.
 
@@ -184,3 +184,5 @@ After that, [some basic bash script](https://github.com/benjojo/traceroute-haiku
 ![haiku trace with linux and mtr](/blog-images/image3.gif)
 
 All served from this precariously hanging pi in my living room :)
+
+![the pi powering it all, hanging from it's POE adapter](/blog-images/footer.JPG)
