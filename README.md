@@ -5,7 +5,7 @@ Sometimes I like to think that I do "serious" blog posts like ["The strange case
 
 This one definitely falls into the latter category.
 
-Traceroutes are a common network debugging diagnostic tool. They list (should) every router that your packet travels through to get to its final destination. Here is what it looks like from my flat to my website:
+Traceroutes are a common network debugging diagnostic tool. They (should) list every router that your packet travels through to get to its final destination. Here is what it looks like from my flat to my website:
 
 ```
 # traceroute6 benjojo.co.uk -q 1
@@ -24,7 +24,7 @@ Traceroutes work using the `Time To Live` ( for IPv4 ) or `Hop Limit` ( for IPv6
 
 ![IPv6 packet diagram](/blog-images/image1.png)
 
-The idea of this section of IP packets is to stop packets from infinitely going in circles in the case of a fault in a network, it works by for every router a packet jumps though, this number is decreased. If the number reaches zero then the packet is dropped.
+The idea of this value is to stop packets from infinitely going in circles in the case of a fault in a network. For every router a packet jumps though, this number is decreased.
 
 However to let the other side know that a packet was lost in the manner, the router is suppose to return the packet inside another packet to notify it:
 
@@ -34,7 +34,7 @@ The idea of traceroute is to purposely set these hop limit very low and incremen
 
 ![how a traceroute works gif](/blog-images/trace.gif)
 
-In addition, traceroute tools helpfully lookup the "reverse DNS" of the IP address to find out more information about the router. However placing reverse DNS on these IP addresses is entirely optional but most operators do to help their clients debug things.
+In addition, traceroute tools helpfully lookup the "reverse DNS" of the IP address to find out more information about the router. However placing reverse DNS on these IP addresses is entirely optional but most operators do set it to help their clients debug things.
 
 However people have used this common function of traceroute to build fun addresses to trace that often spell out funny things, one example being `bad.horse`:
 
@@ -113,11 +113,11 @@ In my head I can think of two ways this can be done, either chain lot of fake in
 
 ![stand back i'm going to do user space networking or science (xkcd)](/blog-images/image2.png)
 
-To do this, I am going to use a built in system inside linux called TUN/TAP. This is the system that is used to make VPN’s work. The idea is that it can make a "network port" on your computer, that instead of going to a physical section of hardware, it instead goes to a program that handles the packet.
+To do this, I am going to use a built in system inside linux called [TUN/TAP](https://www.kernel.org/doc/Documentation/networking/tuntap.txt). This is the system that is used to make VPN's work. The idea is that it can make a "network port" on your computer, that instead of going to a physical section of hardware, it instead goes to a program that handles the packet.
 
-The idea is, to write a simple network adapter that would 4 fake router hops for any packet destined for an address ending in 4.
+The idea is, to write a simple network adapter that would insert 4 fake router hops for any packet destined for an address ending in 4.
 
-With these fake 4 router hops, I can fit 4 small sentences in the reverse DNS entries of the IP addresses. I opted to pick to show a [Haiku](https://en.wikipedia.org/wiki/Haiku) since they are small, typically 3 sentences:
+With these fake 4 router hops, I can fit 4 small sentences in the reverse DNS entries of the IP addresses. I opted to show a [Haiku](https://en.wikipedia.org/wiki/Haiku) since they are small, typically 3 sentences:
 
 >whitecaps on the bay
 >
