@@ -55,7 +55,7 @@ func main() {
 			returnpacket[6] = 0x3a               // Next header (aka packet content protocol), 0x3a == 58 == ICMPv6
 			returnpacket[7] = 0x40               // Hop Limit of the outgoing packet, 0x40 == 64
 			// Set the source to the destination of the packet, but morph it based on the TTL
-			for i := 0; i < 16; i++ {
+			for i := 1; i < 16; i++ {
 				returnpacket[7+i] = packet[23+i]
 			}
 			returnpacket[7+16] = 0x00 + TTL
