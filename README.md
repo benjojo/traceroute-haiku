@@ -1,7 +1,7 @@
-Traceroute Haiku’s
+Traceroute Haiku
 ===
 
-Sometimes I like to think that I do "serious" blog posts like ["The strange case of ICMP Type 69 on Linux"](https://blog.benjojo.co.uk/post/linux-icmp-type-69) or ["Anycast possibly done better"](https://blog.benjojo.co.uk/post/ipv6-backing-anycast-possibly-better), However I also do a lot of stupid ones like ["IP over AX.25 over 802.11 with ESP8266"](https://blog.benjojo.co.uk/post/AX25-over-wifi-with-ESP8266), ["I may be the only evil (bit) user on the internet"](https://blog.benjojo.co.uk/post/evil-bit-RFC3514-real-world-usage) or ["TOTP SSH port fluxing"](https://blog.benjojo.co.uk/post/ssh-port-fluxing-with-totp)
+Sometimes I like to think that I do "serious" blog posts like ["The strange case of ICMP Type 69 on Linux"](https://blog.benjojo.co.uk/post/linux-icmp-type-69) or ["Anycast possibly done better"](https://blog.benjojo.co.uk/post/ipv6-backing-anycast-possibly-better). However I also do a lot of stupid ones like ["IP over AX.25 over 802.11 with ESP8266"](https://blog.benjojo.co.uk/post/AX25-over-wifi-with-ESP8266), ["I may be the only evil (bit) user on the internet"](https://blog.benjojo.co.uk/post/evil-bit-RFC3514-real-world-usage) or ["TOTP SSH port fluxing"](https://blog.benjojo.co.uk/post/ssh-port-fluxing-with-totp).
 
 This one definitely falls into the latter category.
 
@@ -20,23 +20,23 @@ traceroute to benjojo.co.uk (2400:cb00:2048:1::6814:6110), 30 hops max, 80 byte 
  8  2400:cb00:21:1024::a29e:99be (2400:cb00:21:1024::a29e:99be)  2.231 ms
 ```
 
-Traceroutes work using the `Time To Live` ( for IPv4 ) or `Hop Limit` ( for IPv6 )
+Traceroutes work using the `Time To Live` (for IPv4) or `Hop Limit` (for IPv6) field.
 
 ![IPv6 packet diagram](/blog-images/image1.png)
 
-The idea of this value is to stop packets from infinitely going in circles in the case of a fault in a network. For every router a packet jumps though, this number is decreased.
+The idea of this value is to stop packets from infinitely going in circles in case of a fault in a network. For every router a packet jumps though, this number is decreased.
 
-However to let the other side know that a packet was lost in the manner, the router is suppose to return the packet inside another packet to notify it:
+However to let the other side know that a packet was lost in the manner, the router is supposed to return the packet inside another packet to notify them:
 
 ![IPv6 ICMP packet in wireshark](/blog-images/image6.png)
 
-The idea of traceroute is to purposely set these hop limit very low and incrementally increase it upwards to discover all routers in the path between you and the destination:
+The idea of traceroute is to purposely set this hop limit very low and incrementally increase it upwards to discover all routers in the path between you and the destination:
 
 ![how a traceroute works gif](/blog-images/trace.gif)
 
-In addition, traceroute tools helpfully lookup the "reverse DNS" of the IP address to find out more information about the router. However placing reverse DNS on these IP addresses is entirely optional but most operators do set it to help their clients debug things.
+In addition, traceroute tools helpfully lookup the "reverse DNS" of the IP address to find out more information about the router. Even if placing reverse DNS on these IP addresses is entirely optional, most operators do set it to help their clients debug things.
 
-However people have used this common function of traceroute to build fun addresses to trace that often spell out funny things, one example being `bad.horse`:
+Critically, if you own an IP block you can point the reverse DNS to whatever you want. People have used that and this common feature of traceroute to build fun addresses to trace that often spell out funny things, one example being `bad.horse`:
 
 ```
 ben@metropolis:~$ traceroute bad.horse --resolve-hostnames -q 1 -f 20
@@ -109,15 +109,15 @@ HOST:                                              Loss%   Snt   Last   Avg  Bes
  29.|-- cv6.poinsignon.org                            0.0%     1   14.6  14.6  14.6  14.6   0.0
 ```
 
-In my head I can think of two ways this can be done, either chain lot of fake interfaces inside a single system and use that as "router hops", or I can augment the whole thing with user space networking to generate the fake expiry messages to make it seem like there are routers in the path that are not there.
+I can think of two ways this can be done: either chain lots of fake interfaces inside a single system and use that as "router hops", or augment the whole thing with user space networking to generate the fake expiry messages to make it seem like there are routers in the path that are not there.
 
 ![stand back i'm going to do user space networking or science (xkcd)](/blog-images/image2.png)
 
-To do this, I am going to use a built in system inside linux called [TUN/TAP](https://www.kernel.org/doc/Documentation/networking/tuntap.txt). This is the system that is used to make VPN's work. The idea is that it can make a "network port" on your computer, that instead of going to a physical section of hardware, it instead goes to a program that handles the packet.
+To do this today, I am going to use a built in system inside linux called [TUN/TAP](https://www.kernel.org/doc/Documentation/networking/tuntap.txt). This is the system used to make VPNs work. The idea is that it can make a "network port" on your computer, that instead of going to a physical section of hardware, goes instead to a program that handles the packet.
 
-The idea is, to write a simple network adapter that would insert 4 fake router hops for any packet destined for an address ending in 4.
+The idea is to write a simple network adapter that would insert 4 fake router hops for any packet destined for an address ending in 4.
 
-With these fake 4 router hops, I can fit 4 small sentences in the reverse DNS entries of the IP addresses. I opted to show a [Haiku](https://en.wikipedia.org/wiki/Haiku) since they are small, typically 3 sentences:
+With these fake 4 router hops, I can fit 4 small sentences in the reverse DNS entries of the IP addresses. I opted to show a [Haiku](https://en.wikipedia.org/wiki/Haiku) since they are small, typically 3 sentences, and we can find lots of them:
 
 >whitecaps on the bay
 >
@@ -127,7 +127,7 @@ With these fake 4 router hops, I can fit 4 small sentences in the reverse DNS en
 >
 >Polona Oblak
 
-I could turn this into
+I could turn this into:
 
 >Whitecaps.on.the.bay
 >
@@ -137,11 +137,11 @@ I could turn this into
 >
 >author.Polona.Oblak
 
-I then wrote the networking config to route a /48 of IPv6 space to a raspberry pi on my shelf, and got to writing the TUN adapter, the idea was to do something like this:
+I then wrote the networking config to route a /48 of IPv6 space to a Raspberry Pi on my shelf, and got to writing the TUN adapter. The idea was to do something like this:
 
 ![networking stack diagram](/blog-images/image5.png)
 
-Thankfully the process to generate TTL/Hop limit expired packets is fairly easy, and you can find the code to do this here: https://github.com/benjojo/traceroute-haiku/blob/master/haiku-tun/main.go
+Thankfully the process to generate "TTL/Hop limit expired" packets is fairly easy, and you can find the code to do this here: https://github.com/benjojo/traceroute-haiku/blob/master/haiku-tun/main.go
 
 All wrapped up in a basic systemd service and we are good to go:
 
@@ -165,7 +165,7 @@ User=root
 WantedBy=multi-user.target
 ```
 
-I then scraped all of [www.dailyhaiku.org](http://www.dailyhaiku.org) ( sorry ) using Lynx and a bash loop, and then wrote [a small go program](https://github.com/benjojo/traceroute-haiku/blob/master/haikus/generatezonefile.go) to generate the required BIND zone file entries:
+I then scraped all of [www.dailyhaiku.org](http://www.dailyhaiku.org) (sorry!) using Lynx and a bash loop, and then wrote [a small go program](https://github.com/benjojo/traceroute-haiku/blob/master/haikus/generatezonefile.go) to generate the required BIND zone file entries:
 
 ```
 ben@metropolis:~/traceroute-haiku/haikus$ ./haikus | more
