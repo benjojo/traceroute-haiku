@@ -36,7 +36,7 @@ The idea of traceroute is to purposely set this hop limit very low and increment
 
 In addition, traceroute tools helpfully lookup the "reverse DNS" of the IP address to find out more information about the router. Even if placing reverse DNS on these IP addresses is entirely optional, most operators do set it to help their clients debug things.
 
-Critically, if you own an IP block you can point the reverse DNS to whatever you want. People have used that and this common feature of traceroute to build fun addresses to trace that often spell out funny things, one example being `bad.horse`:
+Critically, if you own an IP block you can point the reverse DNS to whatever you want (most hosting providers let you edit their zone file though, though some of them validate the records you provide). People have used that and this common feature of traceroute to build fun addresses to trace that often spell out funny things, one example being `bad.horse`:
 
 ```
 ben@metropolis:~$ traceroute bad.horse --resolve-hostnames -q 1 -f 20
